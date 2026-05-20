@@ -1,6 +1,6 @@
 ---
 name: overkill
-description: Propose advanced, maximalist alternatives to whatever solution is being discussed — the techniques, data structures, frameworks, and tooling that lie beyond the pragmatic answer. Invoke when the user says "overkill", "overkill this", "/overkill", "make it enterprise", "what's the advanced version", or otherwise asks for the maximalist, future-proofed, or frontier take on a problem. Returns a ranked set of alternatives — advanced data structures, distributed-systems algorithms, niche frameworks, design patterns, and frontier tooling — each scored on a calibrated complexity scale, with links to learn more, the skills the path develops, and the future-scale scenarios in which it pays off. This skill expands the user's map of what is possible; it is not a pragmatic recommendation engine and should not be used when the user wants the simplest sufficient answer.
+description: Propose advanced, maximalist alternatives to whatever solution is being discussed — the techniques, data structures, frameworks, and tooling that lie beyond the pragmatic answer. Invoke when the user says "overkill", "overkill this", "/overkill", "make it enterprise", "what's the advanced version", or otherwise asks for the maximalist, future-proofed, or frontier take on a problem. Supports flags `--max` (only show 🔥 7+ options), `--advanced` (operator-focused comparison table), and `--current` (use web search to fetch up-to-date references and verify project health, when web access is available). Returns a ranked set of alternatives — advanced data structures, distributed-systems algorithms, niche frameworks, design patterns, and frontier tooling — each scored on a calibrated complexity scale, with links to learn more, the skills the path develops, and the future-scale scenarios in which it pays off. This skill expands the user's map of what is possible; it is not a pragmatic recommendation engine and should not be used when the user wants the simplest sufficient answer.
 ---
 
 # Overkill
@@ -9,7 +9,7 @@ Take the current problem a step beyond its pragmatic answer. Surface advanced da
 
 ## When to Use This Skill
 
-- The user has a working or proposed solution and asks `overkill`, `overkill this`, `/overkill`, `overkill --max`, or `overkill --advanced`.
+- The user has a working or proposed solution and asks `overkill`, `overkill this`, `/overkill`, `overkill --max`, `overkill --advanced`, or `overkill --current`.
 - The user asks "what's the advanced version of this?", "make it enterprise / FAANG-grade / future-proof", "give me the maximalist take", or "show me what's past the pragmatic answer."
 - The user is exploring the design space for learning, technical due diligence, or curiosity about what frontier techniques exist for a class of problem.
 
@@ -31,7 +31,17 @@ Do not use this skill when the user wants the simplest sufficient solution, an M
 overkill
 ```
 
-In a Claude Code session about a concrete problem, this returns 3–6 ranked alternatives with complexity scores, learning links, skills profile, and the future-scale scenarios in which each pays off.
+When the user invokes `overkill` without any flags, **pause and ask which modes to apply before producing output.** Present the three modes as a multi-select picker (or, in environments without structured prompts, a numbered list) so the user can opt in to any combination — or none, for default behavior. Use this exact phrasing for each option:
+
+- **`--max`** — Restrict suggestions to the highest-complexity options (🔥 7/10 and above). Pick this when you already know the moderate options and want only the frontier.
+- **`--advanced`** — Switch the comparison table to operator-focused columns (ops burden, hiring difficulty, time to first commit). Pick this if you are evaluating real adoption cost rather than learning.
+- **`--current`** — Use web search to fetch up-to-date references and verify project health. Adds latency. Pick this for research or when references must reflect the current state of a fast-moving area.
+
+After the user selects (any subset, including nothing), proceed to produce the response with the chosen modes applied. The selection is per-invocation — do not carry it across future `overkill` calls in the same conversation; ask again each time.
+
+If the user invokes `overkill` with **any** flag already passed (e.g., `overkill --max`, `overkill --current`, `overkill --advanced --current`), skip the picker entirely and run with exactly the flags they passed. The picker exists to surface modes to users who do not know they exist; users who pass flags have already chosen.
+
+In all cases the response returns 3–6 ranked alternatives with complexity scores, learning links, skills profile, and the future-scale scenarios in which each pays off.
 
 ### Advanced Usage
 
@@ -47,7 +57,13 @@ overkill --advanced
 
 Switches the comparison table to the operator-focused columns — ops burden, hiring difficulty, time to first commit — instead of the default learner-focused columns. Intended for managers, staff engineers, or platform leads evaluating real adoption cost.
 
-`--max` and `--advanced` can be combined: `overkill --max --advanced`.
+```
+overkill --current
+```
+
+Opts in to web search. The skill verifies that recommended frameworks/runtimes/libraries are still maintained, surfaces papers or primary documentation released after the model's training cutoff, and prefers fresh canonical references over older ones in the "Learn more" field. Use when the user is doing research, technical due diligence, or wants citations that reflect the current state of a fast-moving area. Default mode stays offline and deterministic; `--current` trades latency and consistency for currency.
+
+Flags can be combined freely: `overkill --max --advanced --current`.
 
 ## Output Format
 
@@ -90,6 +106,16 @@ Order options from **most well-known → most obscure** within the chosen comple
 | Approach | Complexity | Time to first commit | Ops burden | Hiring difficulty | Payoff horizon |
 
 In both modes, use the same 🔥 N/10 scale for Complexity. "Payoff horizon" should be expressed as the concrete scale, load, or organizational condition under which the option starts to earn its cost (e.g., "≥10⁹ events/day", "multi-region active-active with RPO=0", "team size >50 with independent deploy cadence").
+
+## Behavior with `--current`
+
+When the user passes `--current`, use web search and web fetch as part of preparing the response. Concretely:
+
+1. **Verify project health** for any recommended framework, runtime, or library that is younger or less mainstream than the well-established options. Check the project's primary repository or website for recent commit activity, the most recent release date, and any explicit deprecation or hand-off notices. If a project is dormant, abandoned, or has been superseded, either replace it with the current equivalent or annotate the "What it is" line so the user is not led to dead tooling.
+2. **Refresh "Learn more" links.** Prefer references that are both authoritative *and* recent enough to reflect the current state of the technique: the canonical paper plus a follow-up or revision from the last 1–2 years when one exists; primary documentation at its current URL rather than a snapshot from training data; a well-cited recent blog post over an older one if the technique has materially evolved. Keep the link count to 1–3 per option — currency, not volume, is the goal.
+3. **Surface significant new options** that did not exist at the model's training cutoff if they would meaningfully reshape the response (e.g., a new consensus protocol, a runtime that has crossed into production-readiness, a paper that supersedes an older technique). Place them in the order rule (well-known → obscure) on their current standing, not their novelty.
+4. **Budget search calls.** Aim for one focused search per option that needs refreshing, not exhaustive sweeps. Skip search entirely for options where the references are durable and stable (e.g., a 1990s paper on a foundational data structure does not need re-checking).
+5. **Degrade gracefully.** If web search or web fetch is unavailable in the current environment, do not block the response. Fall back to the offline behavior and add a one-line note to the user: "`--current` requested but web access is not available in this environment; response uses training-cutoff references." Do not silently produce stale-looking content as if it were current.
 
 ## The complexity scale
 
@@ -136,9 +162,10 @@ Serious, technically precise, and curious. Treat the user as an engineer who alr
 
 - Identify the baseline before proposing alternatives. Without a fixed reference point, complexity scores are meaningless.
 - Prefer category variety over depth in any one category. A response of six frameworks teaches less than a response spanning a data structure, an algorithm, a framework, a pattern, and a piece of tooling.
-- Keep "Learn more" links durable — papers, primary documentation, well-cited writeups. Avoid blog posts that will rot.
+- Keep "Learn more" links durable — papers, primary documentation, well-cited writeups. Avoid blog posts that will rot. In `--current` mode, prefer recent authoritative sources over older ones when the technique has materially evolved.
 - Calibrate scores against the anchor list every time. Score drift across invocations defeats the purpose of the scale.
 - If the user is in `--advanced` mode, lean into the operational cost framing — the audience is making a real adoption decision, not exploring.
+- In `--current` mode, budget searches deliberately. One focused query per option that needs refreshing beats four scattered ones. Foundational techniques (a 1990s data-structure paper, a settled algorithm) usually do not need re-verification at all.
 
 ## Common Use Cases
 
