@@ -11,11 +11,9 @@ This skill is for explorers and engineers who already know the simple answer and
 Inside any Claude Code session:
 
 ```
-/plugin marketplace add <owner>/claude-overkill
+/plugin marketplace add santiago-vargas-de-kruijf/claude-overkill
 /plugin install overkill@overkill-marketplace
 ```
-
-Replace `<owner>/claude-overkill` with the GitHub `owner/repo` once this repo is published. Updates are pulled with `/plugin marketplace update`.
 
 ### Option 2 — Manual install (no marketplace)
 
@@ -48,15 +46,13 @@ Claude will return ranked alternatives with complexity scores, a comparison tabl
 ```
 claude-overkill/
 ├── .claude-plugin/
-│   └── marketplace.json         ← marketplace catalog
+│   └── marketplace.json
 ├── plugins/
 │   └── overkill/
 │       ├── .claude-plugin/
-│       │   └── plugin.json      ← plugin manifest
+│       │   └── plugin.json
 │       └── skills/
 │           └── overkill/
-│               └── SKILL.md     ← the skill itself
+│               └── SKILL.md
 └── README.md
 ```
-
-The skill at `plugins/overkill/skills/overkill/SKILL.md` is the canonical source. The marketplace and plugin manifests exist so users can install it with `/plugin install` instead of cloning manually.
