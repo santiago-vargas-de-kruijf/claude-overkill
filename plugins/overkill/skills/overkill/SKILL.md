@@ -1,30 +1,61 @@
 ---
 name: overkill
-description: Propose advanced, maximalist alternatives to whatever solution is being discussed — the techniques, data structures, frameworks, and tooling that lie beyond the pragmatic answer. Invoke when the user says "overkill", "overkill this", "/overkill", "make it enterprise", "what's the advanced version", or otherwise asks for the maximalist, future-proofed, or frontier take on a problem. Returns a ranked set of alternatives — advanced data structures, distributed-systems algorithms, niche frameworks, design patterns, and frontier tooling — each scored on a complexity scale, with a comparison table and the future-scale scenarios each option would actually pay off in. This skill expands the user's map of what is possible; it is not a pragmatic recommendation engine and should not be used when the user wants the simplest sufficient answer.
+description: Propose advanced, maximalist alternatives to whatever solution is being discussed — the techniques, data structures, frameworks, and tooling that lie beyond the pragmatic answer. Invoke when the user says "overkill", "overkill this", "/overkill", "make it enterprise", "what's the advanced version", or otherwise asks for the maximalist, future-proofed, or frontier take on a problem. Returns a ranked set of alternatives — advanced data structures, distributed-systems algorithms, niche frameworks, design patterns, and frontier tooling — each scored on a calibrated complexity scale, with links to learn more, the skills the path develops, and the future-scale scenarios in which it pays off. This skill expands the user's map of what is possible; it is not a pragmatic recommendation engine and should not be used when the user wants the simplest sufficient answer.
 ---
 
 # Overkill
 
-Take the current problem a step beyond its pragmatic answer. Surface advanced data structures, distributed-systems algorithms, niche frameworks, design patterns, and frontier tooling that go further than the baseline requires — and rank them on a calibrated complexity scale so the user can see the true cost and scope of each.
+Take the current problem a step beyond its pragmatic answer. Surface advanced data structures, distributed-systems algorithms, niche frameworks, design patterns, and frontier tooling that go further than the baseline requires — and rank them on a calibrated complexity scale so the user can see the true scope and learning surface of each.
 
-## When to use
+## When to Use This Skill
 
-Trigger when the user says any of:
-- `overkill`, `overkill this`, `/overkill`, `overkill --max`
-- "what's the advanced version of this?"
-- "make it enterprise / FAANG-grade / future-proof"
-- "give me the maximalist take"
-- "show me what's past the pragmatic answer"
+- The user has a working or proposed solution and asks `overkill`, `overkill this`, `/overkill`, `overkill --max`, or `overkill --advanced`.
+- The user asks "what's the advanced version of this?", "make it enterprise / FAANG-grade / future-proof", "give me the maximalist take", or "show me what's past the pragmatic answer."
+- The user is exploring the design space for learning, technical due diligence, or curiosity about what frontier techniques exist for a class of problem.
 
-**Do not use** when the user wants the simplest sufficient solution, an MVP, or a direct production recommendation. This skill explores the maximalist end of the design space; presenting its output as a default recommendation would mislead. If unsure of the user's intent, ask.
+Do not use this skill when the user wants the simplest sufficient solution, an MVP, or a direct production recommendation. The skill explores the maximalist end of the design space; presenting its output as a default recommendation would mislead. If unsure of the user's intent, ask one clarifying question first.
 
-## What to produce
+## What This Skill Does
 
-A single response with three sections, in this order:
+1. **Restates the baseline**: identifies the current pragmatic solution in one sentence so every alternative has a fixed reference point.
+2. **Proposes 3–6 advanced alternatives**: each from a distinct category (data structures, algorithms, frameworks, design patterns, tooling), ordered from most well-known to most obscure within the requested complexity range.
+3. **Scores each option on a calibrated complexity scale** (🔥 1–10) anchored across responses, so scores are comparable across invocations.
+4. **Produces a comparison table** tailored to the requested mode — a learner-focused table by default, or an operator-focused table in `--advanced` mode.
+5. **Surfaces learning resources and a skill profile** for each option so the user can act on the suggestion as a study path, not just an architectural reference.
 
-### 1. The problem, restated
+## How to Use
 
-One sentence on what's currently being discussed (the "baseline" solution). This anchors the comparison. If the conversation is too vague to identify a baseline, ask the user one clarifying question before proceeding.
+### Basic Usage
+
+```
+overkill
+```
+
+In a Claude Code session about a concrete problem, this returns 3–6 ranked alternatives with complexity scores, learning links, skills profile, and the future-scale scenarios in which each pays off.
+
+### Advanced Usage
+
+```
+overkill --max
+```
+
+Restricts the proposed alternatives to options at 🔥 7/10 and above. Useful when the user already knows the moderate-complexity options and wants only the frontier.
+
+```
+overkill --advanced
+```
+
+Switches the comparison table to the operator-focused columns — ops burden, hiring difficulty, time to first commit — instead of the default learner-focused columns. Intended for managers, staff engineers, or platform leads evaluating real adoption cost.
+
+`--max` and `--advanced` can be combined: `overkill --max --advanced`.
+
+## Output Format
+
+A single response with three sections, in this order.
+
+### 1. The baseline, restated
+
+One sentence on what's currently being discussed. If the conversation is too vague to identify a baseline, ask the user one clarifying question before proceeding.
 
 ### 2. Overkill alternatives (3–6 options)
 
@@ -35,25 +66,30 @@ Each option follows this template:
 
 **What it is:** one or two sentences on the actual mechanics.
 **How it goes beyond the baseline:** the specific capability or guarantee it adds that the baseline lacks.
-**Hidden cost:** the operational, cognitive, or hiring cost that is rarely covered in introductory material.
-**Scenario where it pays off:** the concrete future state in which this option becomes the correct choice — be specific about scale, latency, consistency, or team conditions (e.g., "sustained >40M concurrent connections across 12 regions with sub-millisecond p99 and strict per-region failover").
+**Skills developed by this path:** the concrete technical knowledge a practitioner gains from adopting it (e.g., "lock-free programming, memory ordering, ABA-problem mitigation").
+**Learn more:** 1–3 high-signal links — original papers, canonical posts, primary documentation. Prefer durable sources (papers, language/library docs, well-cited blog posts) over news articles.
+**Scenario where it pays off:** the concrete future state in which this option becomes the correct choice — be specific about scale, latency, consistency, or team conditions.
 ```
 
-Order options from **most well-known → most obscure** within the chosen complexity range. Mix categories — don't return six frameworks. Aim for variety across:
+Order options from **most well-known → most obscure** within the chosen complexity range. Mix categories — do not return six frameworks. Aim for variety across:
 
-- **Data structures**: skip lists, persistent / immutable trees, HAMTs, Bloom / Cuckoo / Quotient filters, Count-Min Sketch, HyperLogLog, succinct data structures, wavelet trees, finger trees, Roaring bitmaps, Y-FastTrie, van Emde Boas trees.
-- **Algorithms**: lock-free / wait-free variants, MVCC, CRDTs, Raft/Paxos, vector clocks, consistent hashing with bounded loads, hopscotch/Robin Hood hashing, FM-index, learned indexes, approximate nearest neighbor (HNSW, FAISS).
+- **Data structures**: skip lists, persistent / immutable trees, HAMTs, Bloom / Cuckoo / Quotient filters, Count-Min Sketch, HyperLogLog, succinct data structures, wavelet trees, finger trees, Roaring bitmaps, Y-Fast Trie, van Emde Boas trees.
+- **Algorithms**: lock-free / wait-free variants, MVCC, CRDTs, Raft / Paxos, vector clocks, consistent hashing with bounded loads, hopscotch / Robin Hood hashing, FM-index, learned indexes, approximate nearest neighbor (HNSW, FAISS).
 - **Frameworks / runtimes (well-known → niche)**: Kubernetes, gRPC, Kafka → Temporal, NATS JetStream, Materialize, ScyllaDB → Pony, Pharo, Unison, Roc, Gleam on BEAM, Verona.
-- **Design patterns**: CQRS + Event Sourcing, Hexagonal/Ports & Adapters, Saga, Outbox, Actor Model, Free monads / tagless final, dependency-inverted plugin architectures, capability-based security.
-- **Tooling / infra**: OpenTelemetry + Tempo + Loki + Grafana + Prometheus full stack, eBPF observability (Pixie, Parca), service meshes (Istio, Linkerd, Cilium), Nix flakes + devShells, Bazel/Pants/Buck2 for a 3-file repo, formal verification (TLA+, Alloy, Coq, Lean), property-based testing + mutation testing + fuzzing all at once, chaos engineering (Litmus, Chaos Mesh).
+- **Design patterns**: CQRS + Event Sourcing, Hexagonal / Ports & Adapters, Saga, Outbox, Actor Model, Free monads / tagless final, dependency-inverted plugin architectures, capability-based security.
+- **Tooling / infra**: OpenTelemetry + Tempo + Loki + Grafana + Prometheus, eBPF observability (Pixie, Parca), service meshes (Istio, Linkerd, Cilium), Nix flakes + devShells, Bazel / Pants / Buck2, formal verification (TLA+, Alloy, Coq, Lean), property-based + mutation + fuzz testing, chaos engineering (Litmus, Chaos Mesh).
 
 ### 3. Comparison table
 
-A compact markdown table with columns:
+**Default mode** — learner-focused columns:
+
+| Approach | Complexity | Skills developed | Learn more | Payoff horizon |
+
+**`--advanced` mode** — operator-focused columns:
 
 | Approach | Complexity | Time to first commit | Ops burden | Hiring difficulty | Payoff horizon |
 
-Use the same 🔥 N/10 scale for Complexity. "Payoff horizon" should be expressed as the concrete scale, load, or organizational condition under which the option starts to earn its cost (e.g., "≥10⁹ events/day", "multi-region active-active with RPO=0", "team size >50 with independent deploy cadence").
+In both modes, use the same 🔥 N/10 scale for Complexity. "Payoff horizon" should be expressed as the concrete scale, load, or organizational condition under which the option starts to earn its cost (e.g., "≥10⁹ events/day", "multi-region active-active with RPO=0", "team size >50 with independent deploy cadence").
 
 ## The complexity scale
 
@@ -64,32 +100,54 @@ Anchor the 🔥 N/10 scores so they stay calibrated across responses:
 - 🔥 5–6: A new runtime dependency (queue, cache, sidecar). Adds an operational surface and an SLO to defend.
 - 🔥 7–8: Introduces a distributed-systems concern — consensus, replication, partial failure. Requires on-call coverage and runbooks.
 - 🔥 9: Research-grade. Implementation depends on primary literature; few production references exist.
-- 🔥 10: Requires specialist hiring or a runtime/language with a small global user base. Long-term maintenance is a strategic commitment.
+- 🔥 10: Requires specialist hiring or a runtime / language with a small global user base. Long-term maintenance is a strategic commitment.
 
-If the user says `overkill --max`, only return options at 🔥 7+.
+If the user passes `--max`, only return options at 🔥 7+.
 
 ## Tone
 
-Serious, technically precise, and curious. Treat the user as an engineer who already knows the pragmatic answer and wants to understand what lies beyond it — the techniques, trade-offs, and frontier ideas they would otherwise never encounter. Explain each option with the rigor you would use in a design review: real mechanics, real failure modes, real costs. The goal is depth and exposure, not humor. Do not editorialize that an option is "absurd" or "ridiculous" — let the complexity score and hidden-cost line do that work objectively.
+Serious, technically precise, and curious. Treat the user as an engineer who already knows the pragmatic answer and wants to understand what lies beyond it — the techniques, trade-offs, and frontier ideas they would otherwise never encounter. Explain each option with the rigor of a design review: real mechanics, real failure modes, real costs. The goal is depth and exposure, not humor. Do not editorialize that an option is "absurd" or "ridiculous" — the complexity score and the skills-developed line do that work objectively.
 
-## Example (abbreviated)
+## Example
+
+**User**: "I'm deduplicating webhook deliveries using an in-process set keyed by delivery ID. overkill"
+
+**Output** (abbreviated):
 
 > **Baseline:** an in-process set keyed by delivery ID, used to deduplicate webhook deliveries on a single node.
 >
-> **#### Redis SET with TTL — Complexity: 🔥 2/10**
-> What it is: `SADD` with a per-key `EXPIRE` providing a shared dedup window across processes.
-> How it goes beyond the baseline: dedup state survives process restarts and is consistent across multiple delivery workers.
-> Hidden cost: introduces Redis as a hard dependency on the delivery path; partial Redis unavailability now causes duplicate deliveries unless a fallback path is designed.
-> Scenario where it pays off: horizontally scaled delivery workers (≥2 nodes) where in-process state diverges and at-least-once semantics are no longer acceptable.
+> #### Redis SET with TTL — Complexity: 🔥 2/10
+> **What it is:** `SADD` with a per-key `EXPIRE` providing a shared dedup window across processes.
+> **How it goes beyond the baseline:** dedup state survives process restarts and is consistent across multiple delivery workers.
+> **Skills developed:** Redis data-structure idioms, TTL-based memory budgeting, designing for partial-availability of a shared cache.
+> **Learn more:** [Redis SET docs](https://redis.io/commands/set/), [Redis as a cache: pattern guide](https://redis.io/docs/latest/develop/use/patterns/).
+> **Scenario where it pays off:** horizontally scaled delivery workers (≥2 nodes) where in-process state diverges and at-least-once semantics are no longer acceptable.
 >
-> **#### Roaring Bitmaps over a Kafka compacted topic — Complexity: 🔥 8/10**
-> What it is: delivery IDs are hashed into dense integer space and tracked in Roaring Bitmaps, with the authoritative state replayed from a Kafka compacted topic so any consumer can rebuild the dedup set deterministically.
-> How it goes beyond the baseline: O(1) membership tests at billions-of-ID scale, log-structured durability, and replayable state for new consumers or disaster recovery.
-> Hidden cost: requires Kafka operational maturity, bitmap chunking strategy, and a compaction policy tuned to the ID hash distribution; debugging false positives requires reasoning about hash collisions and bitmap segment boundaries.
-> Scenario where it pays off: ≥10⁹ delivery IDs retained across a multi-week window, with multiple independent consumers that must agree on dedup state without a shared database.
+> #### Roaring Bitmaps over a Kafka compacted topic — Complexity: 🔥 8/10
+> **What it is:** delivery IDs are hashed into dense integer space and tracked in Roaring Bitmaps, with the authoritative state replayed from a Kafka compacted topic so any consumer can deterministically rebuild the dedup set.
+> **How it goes beyond the baseline:** O(1) membership tests at billions-of-ID scale, log-structured durability, and replayable state for new consumers or disaster recovery.
+> **Skills developed:** compressed bitmap engineering, hash-distribution analysis, Kafka log-compaction semantics, replayable state-machine design.
+> **Learn more:** [Roaring Bitmaps paper (Chambi et al., 2014)](https://arxiv.org/abs/1402.6407), [Kafka log compaction](https://kafka.apache.org/documentation/#compaction).
+> **Scenario where it pays off:** ≥10⁹ delivery IDs retained across a multi-week window, with multiple independent consumers that must agree on dedup state without a shared database.
 >
-> *(comparison table follows)*
+> *(comparison table follows in the requested mode)*
 
-## Final reminder
+## Tips
 
-This skill is for explorers and engineers who want to take a problem a step further than the pragmatic answer — to see the advanced data structures, distributed-systems techniques, and frontier tooling that exist at the edges of the field. Treat every suggestion as a serious object of study, not a punchline. The complexity score is the honest signal of cost; the user is capable of deciding what to do with it. Your job is to expand their map of what is possible, accurately.
+- Identify the baseline before proposing alternatives. Without a fixed reference point, complexity scores are meaningless.
+- Prefer category variety over depth in any one category. A response of six frameworks teaches less than a response spanning a data structure, an algorithm, a framework, a pattern, and a piece of tooling.
+- Keep "Learn more" links durable — papers, primary documentation, well-cited writeups. Avoid blog posts that will rot.
+- Calibrate scores against the anchor list every time. Score drift across invocations defeats the purpose of the scale.
+- If the user is in `--advanced` mode, lean into the operational cost framing — the audience is making a real adoption decision, not exploring.
+
+## Common Use Cases
+
+- An engineer is implementing a feature and wants to understand the full design space before committing to the simple option.
+- A staff or principal engineer is preparing a tech-design document and wants a survey of advanced alternatives to cite and rule out.
+- A team is doing technical due diligence on a vendor's claims ("they use X") and wants to understand where X actually sits on the complexity spectrum.
+- An engineer is choosing a learning project and wants a study path anchored to a real problem rather than an abstract topic.
+- A platform or staff engineer (in `--advanced` mode) is evaluating adoption cost of a frontier technology for their organization.
+
+## Final note
+
+This skill is for explorers and engineers who want to take a problem a step further than the pragmatic answer — to see the advanced data structures, distributed-systems techniques, and frontier tooling that exist at the edges of the field. Treat every suggestion as a serious object of study, not a punchline. The complexity score and the skills-developed line are the honest signals of cost; the user is capable of deciding what to do with it. The job of the skill is to expand the user's map of what is possible, accurately.
