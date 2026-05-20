@@ -1,0 +1,17 @@
+{
+  "name": "overkill-marketplace",
+  "owner": {
+    "name": "claude-overkill"
+  },
+  "description": "A marketplace containing the overkill skill: advanced, maximalist alternatives to whatever problem is being discussed, ranked on a calibrated complexity scale.",
+  "plugins": [
+    {
+      "name": "overkill",
+      "source": "./plugins/overkill",
+      "description": "Surfaces advanced data structures, distributed-systems algorithms, niche frameworks, design patterns, and frontier tooling that go beyond the pragmatic answer. Each option is scored on a calibrated complexity scale with the concrete scenario in which it pays off.",
+      "version": "0.1.0",
+      "category": "exploration",
+      "tags": ["architecture", "learning", "design", "advanced"]
+    }
+  ]
+}
