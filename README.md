@@ -38,6 +38,10 @@ In any Claude Code conversation about a concrete problem:
 - `overkill` — propose advanced alternatives for the current discussion
 - `overkill this` / `/overkill` — same thing
 - `overkill --max` — restrict output to the highest-complexity options (🔥 7+)
+- `overkill --advanced` — switch the comparison table to operator-focused columns (ops burden, hiring difficulty, time to first commit)
+- `overkill --current` — use web search to verify references and check project health (adds latency)
+
+Flags can be combined freely: `overkill --max --advanced --current`.
 
 Claude will return ranked alternatives with complexity scores, a comparison table, and the concrete scale or condition under which each option starts to earn its cost.
 
